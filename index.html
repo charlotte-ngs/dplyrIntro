@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Data Manipulation Using dplyr</title>
+  <meta charset="utf-8">
+  <meta name="description" content="Data Manipulation Using dplyr">
+  <meta name="author" content="Peter von Rohr">
+  <meta name="generator" content="slidify" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <link rel="stylesheet" href="libraries/frameworks/io2012/css/default.css" media="all" >
+  <link rel="stylesheet" href="libraries/frameworks/io2012/css/phone.css" 
+    media="only screen and (max-device-width: 480px)" >
+  <link rel="stylesheet" href="libraries/frameworks/io2012/css/slidify.css" >
+  <link rel="stylesheet" href="libraries/highlighters/highlight.js/css/tomorrow.css" />
+  <base target="_blank"> <!-- This amazingness opens all links in a new tab. -->  <link rel=stylesheet href="./assets/css/ribbons.css"></link>
+
+  
+  <!-- Grab CDN jQuery, fall back to local if offline -->
+  <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.7.min.js"></script>
+  <script>window.jQuery || document.write('<script src="libraries/widgets/quiz/js/jquery.js"><\/script>')</script> 
+  <script data-main="libraries/frameworks/io2012/js/slides" 
+    src="libraries/frameworks/io2012/js/require-1.0.8.min.js">
+  </script>
+  
+  
+
+</head>
+<body style="opacity: 0">
+  <slides class="layout-widescreen">
+    
+    <!-- LOGO SLIDE -->
+        <slide class="title-slide segue nobackground">
+  <hgroup class="auto-fadein">
+    <h1>Data Manipulation Using dplyr</h1>
+    <h2>An Introduction</h2>
+    <p>Peter von Rohr<br/>Charlotte Team</p>
+  </hgroup>
+  <article></article>  
+</slide>
+    
+
+    <!-- SLIDES -->
+    <slide class="" id="slide-1" style="background:;">
+  <hgroup>
+    <h2>dplyr Installation</h2>
+  </hgroup>
+  <article data-timings="">
+    <p><code>dplyr</code> is an R package on CRAN and can be obtained and installed using the conventional R package installation mechanism</p>
+
+<pre><code>install.packages(&#39;dplyr&#39;)
+</code></pre>
+
+<p>should do the trick.</p>
+
+<pre><code class="r">library(dplyr)
+</code></pre>
+
+<p>loads and attaches the <code>dplyr</code> package</p>
+
+<p>The following material is a summary of the introductory vignette in the <code>dplyr</code> packages which is available with </p>
+
+<pre><code>browseVignettes(package = &#39;dplyr&#39;)
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Data Manipulation so far</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li><p>Traditionally, data manipulation in R is done via index selection on data.frames</p></li>
+<li><p>Data are read from external sources, such as files or databases or other objects into R</p></li>
+<li><p>Data in R are mostly stored in data.frames which are objects based on lists with additional matrix-like properties</p></li>
+<li><p>Subsets of data.frames are extracted using index-based selection. As an example the following statement extracts from the <code>iris</code> data.frame all rows which have <code>Sepal.Length &gt; 5.5</code> and <code>Species</code> name &quot;setosa&quot;</p></li>
+</ul>
+
+<pre><code class="r">iris[iris$Sepal.Length &gt; 5.5 &amp; iris$Species == &quot;setosa&quot;,]
+</code></pre>
+
+<pre><code>##    Sepal.Length Sepal.Width Petal.Length Petal.Width Species
+## 15          5.8         4.0          1.2         0.2  setosa
+## 16          5.7         4.4          1.5         0.4  setosa
+## 19          5.7         3.8          1.7         0.3  setosa
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-3" style="background:;">
+  <hgroup>
+    <h2>dplyr</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>Data manipulation using <code>dplyr</code> is based on six verbs each performing a single task</li>
+</ul>
+
+<ol>
+<li>filter() (and slice())</li>
+<li>arrange()</li>
+<li>distinct()</li>
+<li>mutate() (and transmute())</li>
+<li>summarise()</li>
+<li>sample_n() and sample_frac()</li>
+</ol>
+
+<ul>
+<li>Usage of above functions are analogous
+
+<ul>
+<li>the first argument is a data frame</li>
+<li>subsequent arguments describe what to do</li>
+<li>result is a new data frame</li>
+</ul></li>
+<li>Operations can be pipelined using the <code>%&gt;%</code>-operator</li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-4" style="background:;">
+  <hgroup>
+    <h2>filter()</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>Selection of rows from a data frame based on expressions</li>
+</ul>
+
+<pre><code class="r">filter(iris, Sepal.Length &gt; 5.6, Species == &quot;setosa&quot;)
+</code></pre>
+
+<pre><code>##   Sepal.Length Sepal.Width Petal.Length Petal.Width Species
+## 1          5.8         4.0          1.2         0.2  setosa
+## 2          5.7         4.4          1.5         0.4  setosa
+## 3          5.7         3.8          1.7         0.3  setosa
+</code></pre>
+
+<ul>
+<li>Rows can also be selected by positions</li>
+</ul>
+
+<pre><code class="r">slice(iris, 50:51)
+</code></pre>
+
+<pre><code>##   Sepal.Length Sepal.Width Petal.Length Petal.Width    Species
+## 1            5         3.3          1.4         0.2     setosa
+## 2            7         3.2          4.7         1.4 versicolor
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-5" style="background:;">
+  <hgroup>
+    <h2>arrange()</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>Reordering of rows by sorting them according to specified columns</li>
+</ul>
+
+<pre><code class="r">head(arrange(iris, Petal.Width, Petal.Length), 2)
+</code></pre>
+
+<pre><code>##   Sepal.Length Sepal.Width Petal.Length Petal.Width Species
+## 1          4.3           3          1.1         0.1  setosa
+## 2          4.8           3          1.4         0.1  setosa
+</code></pre>
+
+<ul>
+<li>Use <code>desc()</code> for sorting in descending order</li>
+</ul>
+
+<pre><code class="r">head(arrange(iris, desc(Petal.Width)), 3)
+</code></pre>
+
+<pre><code>##   Sepal.Length Sepal.Width Petal.Length Petal.Width   Species
+## 1          6.3         3.3          6.0         2.5 virginica
+## 2          7.2         3.6          6.1         2.5 virginica
+## 3          6.7         3.3          5.7         2.5 virginica
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-6" style="background:;">
+  <hgroup>
+    <h2>select()</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>Selection of a subset of columns</li>
+</ul>
+
+<pre><code class="r">head(select(iris,Sepal.Length,Petal.Length), 3)
+</code></pre>
+
+<pre><code>##   Sepal.Length Petal.Length
+## 1          5.1          1.4
+## 2          4.9          1.4
+## 3          4.7          1.3
+</code></pre>
+
+<ul>
+<li>Range of columns</li>
+</ul>
+
+<pre><code class="r">head(select(iris, Sepal.Width:Petal.Width), 2)
+</code></pre>
+
+<pre><code>##   Sepal.Width Petal.Length Petal.Width
+## 1         3.5          1.4         0.2
+## 2         3.0          1.4         0.2
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-7" style="background:;">
+  <hgroup>
+    <h2>select()</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>all columns except the ones specified</li>
+</ul>
+
+<pre><code class="r">head(select(iris, -(Sepal.Width:Petal.Width)), 2)
+</code></pre>
+
+<pre><code>##   Sepal.Length Species
+## 1          5.1  setosa
+## 2          4.9  setosa
+</code></pre>
+
+<ul>
+<li>renaming columns using <code>select()</code></li>
+</ul>
+
+<pre><code class="r">head(select(iris, sepal_len = Sepal.Length), 2)
+</code></pre>
+
+<pre><code>##   sepal_len
+## 1       5.1
+## 2       4.9
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-8" style="background:;">
+  <hgroup>
+    <h2>rename()</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>changing column names and keeping the rest</p>
+
+<pre><code class="r">head(rename(iris, sepal_len = Sepal.Length), 5)
+</code></pre>
+
+<pre><code>##   sepal_len Sepal.Width Petal.Length Petal.Width Species
+## 1       5.1         3.5          1.4         0.2  setosa
+## 2       4.9         3.0          1.4         0.2  setosa
+## 3       4.7         3.2          1.3         0.2  setosa
+## 4       4.6         3.1          1.5         0.2  setosa
+## 5       5.0         3.6          1.4         0.2  setosa
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-9" style="background:;">
+  <hgroup>
+    <h2>distinct()</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>selection of unique rows </p>
+
+<pre><code class="r">distinct(select(iris, Species))
+</code></pre>
+
+<pre><code>##      Species
+## 1     setosa
+## 2 versicolor
+## 3  virginica
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-10" style="background:;">
+  <hgroup>
+    <h2>mutate()</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>adding new columns</li>
+</ul>
+
+<pre><code class="r">head(mutate(iris, len_rat = Petal.Length / Sepal.Length, lr2 = len_rat^2), 3)
+</code></pre>
+
+<pre><code>##   Sepal.Length Sepal.Width Petal.Length Petal.Width Species len_rat
+## 1          5.1         3.5          1.4         0.2  setosa  0.2745
+## 2          4.9         3.0          1.4         0.2  setosa  0.2857
+## 3          4.7         3.2          1.3         0.2  setosa  0.2766
+##       lr2
+## 1 0.07536
+## 2 0.08163
+## 3 0.07651
+</code></pre>
+
+<ul>
+<li>in contrast to <code>base::transform()</code> newly created columns can immediately be used with <code>dplyr::mutate()</code></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-11" style="background:;">
+  <hgroup>
+    <h2>summarise()</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>Collapsing a data frame into a single row, using a aggregation function such as <code>mean</code></p>
+
+<pre><code class="r">summarise(iris, pet_wi = mean(Petal.Width, na.rm = TRUE))
+</code></pre>
+
+<pre><code>##   pet_wi
+## 1  1.199
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-12" style="background:;">
+  <hgroup>
+    <h2>sample_n(), sample_frac()</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>Drawing a random sample of rows of either a fixed number (<code>sample_n()</code>) or of a fixed fraction (<code>sample_frac()</code>)</li>
+</ul>
+
+<pre><code class="r">sample_n(iris, 5)
+</code></pre>
+
+<pre><code>##    Sepal.Length Sepal.Width Petal.Length Petal.Width    Species
+## 16          5.7         4.4          1.5         0.4     setosa
+## 78          6.7         3.0          5.0         1.7 versicolor
+## 18          5.1         3.5          1.4         0.3     setosa
+## 11          5.4         3.7          1.5         0.2     setosa
+## 8           5.0         3.4          1.5         0.2     setosa
+</code></pre>
+
+<ul>
+<li><p>Use option <code>replace = TRUE</code> to perform a bootstrap sample</p></li>
+<li><p>Optionally use the <code>weight</code> argument to do weighted sampling</p></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-13" style="background:;">
+  <hgroup>
+    <h2>Grouped operations</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li><p>While single verbs are useful, they get really powerful when applying them on groups of data</p></li>
+<li><p>The following example shows how to get average sepal length and petal length for each iris species</p></li>
+</ul>
+
+<pre><code class="r">irisSpecies &lt;- group_by(iris,Species)
+irisLength &lt;- summarize(irisSpecies, 
+                        count = n(), 
+                        sep_len = mean(Sepal.Length, na.rm = TRUE), 
+                        pet_len = mean(Petal.Length, na.rm = TRUE))
+irisLength
+</code></pre>
+
+<pre><code>## Source: local data frame [3 x 4]
+## 
+##      Species count sep_len pet_len
+## 1     setosa    50   5.006   1.462
+## 2 versicolor    50   5.936   4.260
+## 3  virginica    50   6.588   5.552
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-14" style="background:;">
+  <hgroup>
+    <h2>Aggregation functions</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>An aggregation function takes a vector of values and returns a single result</li>
+<li>In addition to base R&#39;s aggregation function such as <code>min()</code>, <code>max()</code>, <code>mean()</code>, <code>sum()</code>, <code>median()</code> and <code>IQR()</code>, dplyr provides some more like
+
+<ul>
+<li><code>n()</code>: count the number of elements in a group</li>
+<li><code>n_distinct()</code>: count the number of unique elements</li>
+<li><code>first(x)</code>, <code>last(x)</code>, <code>n_th(x,n)</code>: work similar to <code>x[1]</code>, <code>x[length(x)]</code> and <code>x[n]</code></li>
+</ul></li>
+<li>one can also use custom aggregation functions</li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-15" style="background:;">
+  <hgroup>
+    <h2>Chaining</h2>
+  </hgroup>
+  <article data-timings="">
+    <p><code>dplyr</code> functions do not have side-effects, hence results must always be saved after each step</p>
+
+<pre><code class="r">step1 &lt;- group_by(iris, Species)
+step2 &lt;- select(step1, Sepal.Width, Petal.Width)
+(step3 &lt;- summarise(step2, 
+                   sep_wi = mean(Sepal.Width, na.rm = TRUE), 
+                   pet_wi = mean(Petal.Width, na.rm = TRUE)))
+</code></pre>
+
+<pre><code>## Source: local data frame [3 x 3]
+## 
+##      Species sep_wi pet_wi
+## 1     setosa  3.428  0.246
+## 2 versicolor  2.770  1.326
+## 3  virginica  2.974  2.026
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-16" style="background:;">
+  <hgroup>
+    <h2>Pipeline</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>Saving intermediate results can be avoided by setting up a pipeline using <code>%&gt;%</code></p>
+
+<pre><code class="r">iris %&gt;% 
+  group_by(Species) %&gt;% 
+  select(Sepal.Width, Petal.Width) %&gt;% 
+  summarise(
+     sep_wi = mean(Sepal.Width, na.rm = TRUE), 
+     pet_wi = mean(Petal.Width, na.rm = TRUE))
+</code></pre>
+
+<pre><code>## Source: local data frame [3 x 3]
+## 
+##      Species sep_wi pet_wi
+## 1     setosa  3.428  0.246
+## 2 versicolor  2.770  1.326
+## 3  virginica  2.974  2.026
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+    <slide class="backdrop"></slide>
+  </slides>
+  <div class="pagination pagination-small" id='io2012-ptoc' style="display:none;">
+    <ul>
+      <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=1 title='dplyr Installation'>
+         1
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=2 title='Data Manipulation so far'>
+         2
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=3 title='dplyr'>
+         3
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=4 title='filter()'>
+         4
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=5 title='arrange()'>
+         5
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=6 title='select()'>
+         6
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=7 title='select()'>
+         7
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=8 title='rename()'>
+         8
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=9 title='distinct()'>
+         9
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=10 title='mutate()'>
+         10
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=11 title='summarise()'>
+         11
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=12 title='sample_n(), sample_frac()'>
+         12
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=13 title='Grouped operations'>
+         13
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=14 title='Aggregation functions'>
+         14
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=15 title='Chaining'>
+         15
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=16 title='Pipeline'>
+         16
+      </a>
+    </li>
+  </ul>
+  </div>  <!--[if IE]>
+    <script 
+      src="http://ajax.googleapis.com/ajax/libs/chrome-frame/1/CFInstall.min.js">  
+    </script>
+    <script>CFInstall.check({mode: 'overlay'});</script>
+  <![endif]-->
+</body>
+  <!-- Load Javascripts for Widgets -->
+  
+  <!-- LOAD HIGHLIGHTER JS FILES -->
+  <script src="libraries/highlighters/highlight.js/highlight.pack.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script>
+  <!-- DONE LOADING HIGHLIGHTER JS FILES -->
+   
+  </html>
